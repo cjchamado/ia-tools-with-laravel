@@ -1,11 +1,11 @@
 services:
   backend:
     build:
-      context: ./backend
+      context: ./api
       dockerfile: Dockerfile
     container_name: ia_tools_backend
     volumes:
-      - ./backend:/var/www
+      - ./api:/var/www
     ports:
       - "8222:8000"
     depends_on:
