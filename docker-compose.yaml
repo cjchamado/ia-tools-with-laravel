@@ -1,0 +1,63 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ia_tools_backend
+    volumes:
+      - ./backend:/var/www
+    ports:
+      - "8222:8000"
+    depends_on:
+      - mysql
+    networks:
+      - ia_tools_net
+
+  mysql:
+    image: mysql:8.0
+    container_name: ia_tools_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3322:3306"
+    volumes:
+      - ia_tools_mysql:/var/lib/mysql
+    networks:
+      - ia_tools_net
+
+  phpmyadmin:
+    container_name: ia_tools_pma
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 4422:80
+    environment:
+      PMA_HOST: mysql
+      UPLOAD_LIMIT: 1G
+    depends_on:
+      - mysql
+    networks:
+      - ia_tools_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ia_tools_frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "9222:9000"
+    networks:
+      - ia_tools_net
+
+networks:
+  ia_tools_net:
+
+volumes:
+  ia_tools_mysql:
