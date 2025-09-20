@@ -45,16 +45,36 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ./app
       dockerfile: Dockerfile
     container_name: ia_tools_frontend
     volumes:
-      - ./frontend:/app
+      - ./app:/app
       - /app/node_modules
     ports:
       - "9222:9000"
     networks:
       - ia_tools_net
+
+  # frontend:
+  #   image: node:20
+  #   container_name: ia_tools_frontend
+  #   working_dir: /app
+  #   volumes:
+  #     - ./frontend:/app
+  #   ports:
+  #     - "9222:9000"
+  #   command:
+  #     - sh
+  #     - -c
+  #     - |
+  #       if [ ! -f quasar.config.js ]; then
+  #         echo 'Criando projeto Quasar...';
+  #         npx @quasar/cli create . --defaults --yes;
+  #       fi
+  #       yarn install && yarn dev
+  #   networks:
+  #     - ia_tools_net
 
 networks:
   ia_tools_net:
