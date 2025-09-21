@@ -1,16 +1,61 @@
-FROM php:8.2-cli
+FROM php:8.3-cli
 
-# Dependências básicas
+ARG REDIS_LIB_VERSION=5.3.7
+
 RUN apt-get update && apt-get install -y \
-    unzip git curl libpng-dev libonig-dev libxml2-dev zip \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    zlib1g-dev \
+    libzip-dev \
+    unzip \
+    libpng-dev \
+    libjpeg-dev \
+    libpq-dev \
+    libxml2-dev \
+    htop \
+    nano \
+    libbrotli-dev \
+    supervisor \
+    # wkhtmltopdf
+    fontconfig \
+    libxrender1 \
+    libxtst6 \
+    xfonts-75dpi \
+    xfonts-base
 
-# Composer
-COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
+# wkhtmltopdf
+RUN echo "deb http://security.debian.org/debian-security bullseye-security main" >  /etc/apt/sources.list \
+  && apt update \
+  && apt install libssl1.1 \
+  && curl -O https://sierra.nyc3.cdn.digitaloceanspaces.com/assets/wkhtmltox.deb \
+  && dpkg -i ./wkhtmltox.deb \
+  && rm ./wkhtmltox.deb
+
+RUN docker-php-ext-configure gd \
+    --enable-gd \
+    --with-jpeg
+
+RUN docker-php-ext-install \
+    zip \
+    pdo \
+    pdo_mysql \
+    xml \
+    simplexml \
+    iconv \
+    pcntl \
+    gd \
+    fileinfo \
+    exif
+
+RUN pecl install redis-${REDIS_LIB_VERSION} \
+    && docker-php-ext-enable redis
+
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+COPY docker/php.ini "$PHP_INI_DIR/conf.d/99_extra.ini"
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+COPY . /var/www
 
 WORKDIR /var/www
 
-# Instalar dependências Laravel
-RUN composer global require laravel/installer
-
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+CMD [ "./start-dev.sh" ]

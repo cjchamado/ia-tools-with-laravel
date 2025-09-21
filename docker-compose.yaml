@@ -4,12 +4,14 @@ services:
       context: ./api
       dockerfile: Dockerfile
     container_name: ia_tools_backend
+    restart: always
     volumes:
       - ./api:/var/www
     ports:
-      - "8222:8000"
+      - "8822:8000"
     depends_on:
       - mysql
+      - redis
     networks:
       - ia_tools_net
 
@@ -43,6 +45,17 @@ services:
     networks:
       - ia_tools_net
 
+  redis:
+    container_name: ia_tools_redis
+    image: redis
+    restart: always
+    ports:
+      - 6622:6379
+    volumes:
+      - ia_tools_redis:/data
+    networks:
+      - ia_tools_net
+
   frontend:
     build:
       context: ./app
@@ -52,32 +65,13 @@ services:
       - ./app:/app
       - /app/node_modules
     ports:
-      - "9222:9000"
+      - "9922:9000"
     networks:
       - ia_tools_net
-
-  # frontend:
-  #   image: node:20
-  #   container_name: ia_tools_frontend
-  #   working_dir: /app
-  #   volumes:
-  #     - ./frontend:/app
-  #   ports:
-  #     - "9222:9000"
-  #   command:
-  #     - sh
-  #     - -c
-  #     - |
-  #       if [ ! -f quasar.config.js ]; then
-  #         echo 'Criando projeto Quasar...';
-  #         npx @quasar/cli create . --defaults --yes;
-  #       fi
-  #       yarn install && yarn dev
-  #   networks:
-  #     - ia_tools_net
 
 networks:
   ia_tools_net:
 
 volumes:
   ia_tools_mysql:
+  ia_tools_redis:

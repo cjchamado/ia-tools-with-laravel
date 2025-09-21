@@ -2,7 +2,18 @@ const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    children: [
+      {
+        path: '',
+        name: 'chat_start',
+        component: () => import('pages/IndexPage.vue')
+      },
+      {
+        path: 'chat/:id',
+        name: 'chat_continue',
+        component: () => import('pages/ChatPage.vue')
+      }
+    ],
   },
 
   // Always leave this as last one,
