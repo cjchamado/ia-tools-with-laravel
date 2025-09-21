@@ -3,9 +3,11 @@
 
 - [Laravel 12](https://laravel.com/docs/12.x)
 - [Docker](https://www.docker.com) (+Docker Compose)
-- [Pest](https://pestphp.com/)
-- [Redis](https://redis.io/)
+- [Pest](https://pestphp.com)
+- [Redis](https://redis.io)
 - [Quasar Framework](https://quasar.dev) (+VueJS)
+- [Pusher](https://pusher.com)
+- [DeepSeek](https://platform.deepseek.com)
 
 ## Download
 
@@ -52,8 +54,6 @@ docker exec ia_tools_backend php artisan key:generate
 # Access container cli (optional)
 docker exec -it ia_tools_backend bash
 ```
-
-- Configure Pusher
 
 ## Open
 
